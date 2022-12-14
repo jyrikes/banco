@@ -7,7 +7,7 @@ def contaExiste():
     print("A conta não existe")
     numConta = int(input("digite o numero da conta ou -1 para sair:"))
     if numConta == -1:
-      return -1
+      break
       
     
   return (numConta,True)
