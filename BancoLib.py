@@ -1,84 +1,46 @@
 import random
-
-
-class Conta():
-    def __init__(self, numConta):
-        self.numero = numConta
-        self.saldo = 0
-
-    def deposite(self, valor):
-        valor = valor * 0.999
-        self.saldo = self.saldo + valor
-
-    def sacar(self, valor):
-        if self.saldo >= valor:
-            self.saldo = self.saldo - valor
-            return True
-        else:
-            return False
-
-
-class Poupanca(Conta):
-
-    def render(self):
-        self.saldo = self.saldo + self.saldo*0.01
-
-class ContaBonificada(Conta):
-    
-    def __init__(self,numConta):
-        self.bonus = 0
-        super().__init__(numConta)
-    
-    def calculaBonus(self,valor):
-        bonus = valor * 0.0001
-        self.bonus = self.bonus + bonus
-
-    def deposite(self,valor):
-        self.calculaBonus(valor)
-        super().deposite(valor)
-
-    def renderBonus(self):
-        #poderia usar a função deposite da classe, mas seria descontado o valor 0.1%
-        self.saldo = self.saldo + self.bonus
-        self.bonus = 0
-
+import dataBase as db
+dados = db.DataBase()
 
 
 
 class Banco():
+
     def __init__(self, nome):
         self.nome = nome
-        self.contas = []
+        self.contas =[]
+        
+
 
     def getNome(self):
         return self.nome
 
     def criarConta(self):
         num = random.randint(0, 1000)
-        c = Conta(num)
-        self.contas.append(c)
-        return num
+        conta = db.Conta(num)
+        if dados.insertConta(conta):
+            return num
 
     def criarPoupanca(self):
         num = random.randint(0, 1000)
-        p = Poupanca(num)
-        self.contas.append(p)
-        return num
+        p = db.Poupanca(num)
+        if dados.insertConta(p):
+            return num
 
     def criarContaBonificada(self):
         num = random.randint(0, 1000)
-        conta_bonificada = ContaBonificada(num)
-        self.contas.append(conta_bonificada)
-        return num
+        contaBonificada = db.ContaBonificada(num)
+        if dados.insertConta(contaBonificada):
+            return num
 
     def criarContas(self,opcao):
-        if opcao == 1:
+        if opcao == "contaCorrente":
             numConta = self.criarConta()
             return numConta
-        elif opcao == 2:
+        elif opcao == "contaPoupanca":
             numConta = self.criarPoupanca()
             return numConta
-        elif opcao == 3:
+        elif opcao == "contaBonificada":
             numConta = self.criarContaBonificada()
             return numConta
         else:
@@ -86,41 +48,52 @@ class Banco():
         
         
         
-    def consultaSaldo(self, numConta):
-        for conta in self.contas:
-            if conta.numero == numConta:
-                return conta.saldo
-        return -1
+    def consultaSaldo(self, numConta,tipoDaConta):
+        try:
+            return dados.retornaSaldo(numConta,tipoDaConta)
+        except:
+            return -1
 
-    def depositar(self, numConta, valor):
-        for conta in self.contas:
-            if conta.numero == numConta:
-                conta.deposite(valor)
+    def depositar(self, numConta, valor,tipoDaConta):
+        conta = dados.retornaConta(numConta,tipoDaConta)
+        return conta.deposite(valor,conta)
 
-    def sacar(self, numConta, valor):
-        for conta in self.contas:
-            if conta.numero == numConta:
-                return conta.sacar(valor)
+    def sacar(self, numConta, valor, tipoDaConta):
+        conta = dados.retornaConta(numConta,tipoDaConta)
+        return conta.sacar(valor,conta)
 
-    def renderPoupanca(self, numConta):
-        for i in self.contas:
-            if i.numero == numConta and isinstance(i, Poupanca):
-                i.render()
-                return True
-        return False
+    def renderPoupanca(self, numConta,tipoDaConta):
+        
+        conta = dados.retornaConta(numConta,tipoDaConta)
+        if isinstance(conta,db.Poupanca):
+            conta.render(conta)
+            return True
+        else:
+            return False
+                
+
     
     def bonificar(self,numConta):
       for i in self.contas:
-          if i.numero == numConta and isinstance(i, ContaBonificada):
+          if i.numero == numConta and isinstance(i, db.ContaBonificada):
               i.renderBonus()
               return True
       return False
     
-    def buscarConta(self,numConta):
+    def buscarConta(self,numConta,tipoDaConta):
       for conta in self.contas:
         if conta.numero == numConta:
           return True
       else:
         return False
       
-      
+banco = Banco("gg")
+num = banco.criarContas("contaBonificada")
+saldo = banco.consultaSaldo(355,"contaBonificada")
+print(num,saldo)
+banco.depositar(355,20,"contaBonificada")
+saldo = banco.consultaSaldo(355,"contaBonificada")
+print(num,saldo)
+banco.sacar(355,10,"contaBonificada")
+saldo = banco.consultaSaldo(355,"contaBonificada")
+print(num,saldo)

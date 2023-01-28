@@ -2,7 +2,7 @@ from BancoLib import Banco
 
 def contaExiste():
   numConta = int(input("digite o numero da conta:"))
-  achouConta = bancoUfrpe.buscarConta(numConta)
+  #achouConta = bancoUfrpe.buscarConta(numConta)
   while not achouConta:
     print("A conta não existe")
     numConta = int(input("digite o numero da conta ou -1 para sair:"))
@@ -56,7 +56,7 @@ while escolha > 0:
         numConta,contaExiste = contaExiste()
         if numConta != -1:
           valor = int(input("digite o valor que deseja depositar:"))
-          saldo = bancoUfrpe.depositar(numConta, valor)
+          #saldo = bancoUfrpe.depositar(numConta, valor)
           print("Valor Depositado")
         
     elif escolha == 4:
